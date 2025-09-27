@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Run - Todo App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-container">
+            <div class="guide-header">
+                <i class="fas fa-rocket"></i>
+                <h1>How to Run Todo App</h1>
+                <p>Follow these steps to get your full-stack todo app running</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-terminal"></i> Open Terminal</h3>
+                        <p>Open terminal/command prompt in your project directory</p>
+                        <code>cd /path/to/your/todo-app</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-download"></i> Install Dependencies</h3>
+                        <p>Install required Node.js packages</p>
+                        <code>npm install</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-database"></i> Setup Database</h3>
+                        <p>Initialize MongoDB with sample data</p>
+                        <code>npm run setup</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-play"></i> Start Server</h3>
+                        <p>Launch the development server</p>
+                        <code>npm run dev</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3><i class="fas fa-globe"></i> Open Browser</h3>
+                        <p>Access your app in the browser</p>
+                        <code>http://localhost:3000</code>
+                        <div class="warning">
+                            ⚠️ <strong>Important:</strong> Use localhost:3000, not Live Server (127.0.0.1:5500)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="troubleshooting">
+                <h2><i class="fas fa-tools"></i> Troubleshooting</h2>
+                
+                <div class="trouble-item">
+                    <h4>❌ "Cannot GET /" error</h4>
+                    <p>Make sure you're accessing <strong>localhost:3000</strong>, not using Live Server</p>
+                </div>
+
+                <div class="trouble-item">
+                    <h4>❌ "Failed to fetch" error</h4>
+                    <p>The Node.js server is not running. Run <code>npm run dev</code> first</p>
+                </div>
+
+                <div class="trouble-item">
+                    <h4>❌ "MongoDB connection error"</h4>
+                    <p>Check your .env file has correct MONGODB_URI</p>
+                </div>
+
+                <div class="trouble-item">
+                    <h4>❌ "Port 3000 already in use"</h4>
+                    <p>Kill existing process: <code>killall node</code> or change PORT in .env</p>
+                </div>
+            </div>
+
+            <div class="quick-links">
+                <a href="/" class="btn-primary">
+                    <i class="fas fa-home"></i> Go to Todo App
+                </a>
+                <a href="https://github.com" class="btn-secondary">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .guide-header i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .guide-header h1 {
+            font-size: 2.5rem;
+            color: #4c51bf;
+            margin-bottom: 10px;
+        }
+
+        .guide-header p {
+            font-size: 1.2rem;
+            color: #718096;
+        }
+
+        .steps-container {
+            margin-bottom: 50px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: #4c51bf;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .step-content h3 i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .step-content p {
+            color: #718096;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .step-content code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            display: block;
+            font-weight: 500;
+        }
+
+        .warning {
+            background: #fef5e7;
+            border: 1px solid #f6e05e;
+            color: #d69e2e;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+
+        .troubleshooting {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+        }
+
+        .troubleshooting h2 {
+            color: #4c51bf;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .troubleshooting h2 i {
+            margin-right: 10px;
+        }
+
+        .trouble-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .trouble-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .trouble-item h4 {
+            color: #e53e3e;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .trouble-item p {
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .trouble-item code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .quick-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: #e2e8f0;
+            color: #4a5568;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .quick-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</body>
+</html>
