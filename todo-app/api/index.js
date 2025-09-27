@@ -1,23 +1,65 @@
-// api/index.js
+// api/index.js - Vercel serverless function
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // Cho phép các domain khác gọi API
-app.use(express.json()); // Phân tích body của request dưới dạng JSON
-app.use(express.static('public')); // Serve static files từ thư mục public
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://your-app.vercel.app', '*'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json());
 
-console.log("Connecting to MongoDB with URI:", process.env.MONGODB_URI);
+// MongoDB connection với caching để tối ưu cho serverless
+let cachedConnection = null;
 
-// Kết nối tới MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("MongoDB connected successfully."))
-    .catch(err => console.error("MongoDB connection error:", err));
+async function connectToDatabase() {
+    if (cachedConnection) {
+        return cachedConnection;
+    }
+
+    try {
+        const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE_URL;
+        
+        if (!MONGODB_URI) {
+            throw new Error('MONGODB_URI environment variable is not defined');
+        }
+
+        console.log('Connecting to MongoDB...');
+        
+        const connection = await mongoose.connect(MONGODB_URI, {
+            bufferCommands: false,
+            maxPoolSize: 1, // Tối ưu cho serverless
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        });
+
+        cachedConnection = connection;
+        console.log('✅ MongoDB connected successfully');
+        return connection;
+    } catch (error) {
+        console.error('❌ MongoDB connection error:', error);
+        throw error;
+    }
+}
+
+// Middleware để đảm bảo kết nối database cho mỗi request
+app.use(async (req, res, next) => {
+    try {
+        await connectToDatabase();
+        next();
+    } catch (error) {
+        console.error('Database connection failed:', error);
+        res.status(500).json({ 
+            message: 'Database connection failed', 
+            error: error.message 
+        });
+    }
+});
 
 // Định nghĩa Schema (cấu trúc) cho một "Todo"
 const todoSchema = new mongoose.Schema({
@@ -113,12 +155,35 @@ app.delete('/api/todos/:id', async (req, res) => {
     }
 });
 
-// Xuất app để Vercel có thể sử dụng
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
+
+// Serve static files cho local development
+if (process.env.NODE_ENV !== 'production') {
+    app.use(express.static('public'));
+    
+    const path = require('path');
+    
+    // Serve index.html cho root path khi local
+    app.get('/', (req, res) => {
+        res.sendFile(path.join(__dirname, '../public/index.html'));
+    });
+}
+
+// Export cho Vercel
 module.exports = app;
 
 // Chạy server ở local (chỉ khi file này được chạy trực tiếp)
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`🚀 Server is running on http://localhost:${PORT}`);
+        console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
 }

@@ -6,8 +6,14 @@
   "scripts": {
     "start": "node api/index.js",
     "dev": "nodemon api/index.js",
+    "build": "echo 'No build step required'",
     "setup": "node setup-db.js",
+    "vercel-build": "echo 'Build completed for Vercel'",
+    "test-deployment": "chmod +x test-deployment.sh && ./test-deployment.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "author": "",
   "license": "ISC",

@@ -1,14 +1,25 @@
 require('dotenv').config();
 
-// Database setup script
+// Database setup script - Compatible with Vercel deployment
 const mongoose = require('mongoose');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/todoapp';
+// Sử dụng DATABASE_URL hoặc MONGODB_URI (tương thích với nhiều platform)
+const MONGODB_URI = process.env.MONGODB_URI || 
+                   process.env.DATABASE_URL || 
+                   'mongodb://localhost:27017/todoapp';
+
+console.log('🔧 Database Setup for Production & Development');
+console.log('📍 Environment:', process.env.NODE_ENV || 'development');
 
 async function setupDatabase() {
     try {
-        console.log('Connecting to MongoDB...');
-        await mongoose.connect(MONGODB_URI);
+        console.log('🔌 Connecting to MongoDB...');
+        console.log('🔗 URI:', MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//$1:***@')); // Hide password in logs
+        
+        await mongoose.connect(MONGODB_URI, {
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        });
         console.log('✅ Connected to MongoDB successfully');
 
         // Define Todo schema

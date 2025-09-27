@@ -14,19 +14,27 @@ class TodoApp {
     }
 
     getAPIUrl() {
-        // Kiểm tra xem đang chạy từ đâu
         const currentHost = window.location.host;
+        const protocol = window.location.protocol;
         
+        // Development environments
         if (currentHost.includes(':5500') || currentHost.includes('127.0.0.1:5500')) {
-            // Đang chạy từ Live Server
+            // Live Server
             return 'http://localhost:3000/api/todos';
-        } else if (currentHost.includes('localhost:3000') || currentHost.includes('127.0.0.1:3000')) {
-            // Đang chạy từ Express server
-            return '/api/todos';
-        } else {
-            // Production hoặc các môi trường khác
+        } 
+        
+        if (currentHost.includes('localhost:3000') || currentHost.includes('127.0.0.1:3000')) {
+            // Local Express server
             return '/api/todos';
         }
+        
+        // Production (Vercel hoặc các hosting khác)
+        if (currentHost.includes('vercel.app') || currentHost.includes('netlify.app') || !currentHost.includes('localhost')) {
+            return '/api/todos';
+        }
+        
+        // Fallback
+        return '/api/todos';
     }
 
     initializeElements() {

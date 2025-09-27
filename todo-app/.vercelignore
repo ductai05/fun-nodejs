@@ -1,0 +1,22 @@
+# Vercel ignore file
+node_modules
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+*.md
+!DEPLOY.md
+!README.md
+
+# Development files
+nodemon.json
+.editorconfig
+.eslintrc*
+.prettierrc*
+
+# Git files
+.git
+.gitignore
