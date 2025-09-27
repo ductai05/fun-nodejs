@@ -55,15 +55,18 @@ Vercel will automatically detect the configuration from `vercel.json`:
 
 ```json
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30
     }
-  ]
+  }
 }
 ```
+
+**Key changes from previous version:**
+- ✅ Removed conflicting `builds` and `routes` properties  
+- ✅ Uses modern Vercel Functions configuration
+- ✅ Increased timeout to 30 seconds for database operations
 
 ### 5. Deploy!
 

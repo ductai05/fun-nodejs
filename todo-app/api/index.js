@@ -76,8 +76,8 @@ const todoSchema = new mongoose.Schema({
     }
 });
 
-// Tạo Model từ Schema
-const Todo = mongoose.model('Todo', todoSchema);
+// Tạo Model từ Schema (tránh OverwriteModelError cho Vercel)
+const Todo = mongoose.models.Todo || mongoose.model('Todo', todoSchema);
 
 // --- Các tuyến đường API (API Routes) ---
 

@@ -8,8 +8,9 @@
     "dev": "nodemon api/index.js",
     "build": "echo 'No build step required'",
     "setup": "node setup-db.js",
-    "vercel-build": "echo 'Build completed for Vercel'",
+    "test-api": "chmod +x test-api.sh && ./test-api.sh",
     "test-deployment": "chmod +x test-deployment.sh && ./test-deployment.sh",
+    "vercel-build": "echo 'Build completed for Vercel'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
