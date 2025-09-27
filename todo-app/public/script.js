@@ -28,13 +28,35 @@ class TodoApp {
             return '/api/todos';
         }
         
-        // Production (Vercel hoặc các hosting khác)
-        if (currentHost.includes('vercel.app') || currentHost.includes('netlify.app') || !currentHost.includes('localhost')) {
+        // Production (Vercel)
+        if (currentHost.includes('vercel.app')) {
+            // Vercel serverless functions
+            return '/api/todos';
+        }
+        
+        // Other hosting platforms
+        if (currentHost.includes('netlify.app') || !currentHost.includes('localhost')) {
             return '/api/todos';
         }
         
         // Fallback
         return '/api/todos';
+    }
+
+    getFullAPIUrl(endpoint = '') {
+        const currentHost = window.location.host;
+        
+        // Development environments
+        if (currentHost.includes(':5500') || currentHost.includes('127.0.0.1:5500')) {
+            return `http://localhost:3000/api${endpoint}`;
+        } 
+        
+        if (currentHost.includes('localhost:3000') || currentHost.includes('127.0.0.1:3000')) {
+            return `/api${endpoint}`;
+        }
+        
+        // Production - always use /api prefix
+        return `/api${endpoint}`;
     }
 
     initializeElements() {
@@ -107,8 +129,9 @@ class TodoApp {
 
     async fetchTodos() {
         try {
-            console.log('Fetching todos from:', this.API_URL);
-            const response = await fetch(this.API_URL);
+            const apiUrl = this.getFullAPIUrl('/todos');
+            console.log('Fetching todos from:', apiUrl);
+            const response = await fetch(apiUrl);
             if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             
             this.todos = await response.json();
@@ -118,7 +141,7 @@ class TodoApp {
         } catch (error) {
             console.error('Error fetching todos:', error);
             this.showConnectionStatus(false);
-            this.showError(`Failed to connect to server. Make sure the server is running on port 3000.\nError: ${error.message}`);
+            this.showError(`Failed to connect to server.\nError: ${error.message}\nTrying to fetch from: ${this.getFullAPIUrl('/todos')}`);
         }
     }
 
@@ -131,7 +154,8 @@ class TodoApp {
         if (!task) return;
 
         try {
-            const response = await fetch(this.API_URL, {
+            const apiUrl = this.getFullAPIUrl('/todos');
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -163,7 +187,8 @@ class TodoApp {
         if (!confirm('Are you sure you want to delete this task?')) return;
         
         try {
-            const response = await fetch(`${this.API_URL}/${id}`, { 
+            const apiUrl = this.getFullAPIUrl(`/todos/${id}`);
+            const response = await fetch(apiUrl, { 
                 method: 'DELETE' 
             });
             
@@ -181,7 +206,8 @@ class TodoApp {
 
     async toggleComplete(id) {
         try {
-            const response = await fetch(`${this.API_URL}/${id}`, { 
+            const apiUrl = this.getFullAPIUrl(`/todos/${id}`);
+            const response = await fetch(apiUrl, { 
                 method: 'PUT' 
             });
             
@@ -205,7 +231,8 @@ class TodoApp {
 
     async updateTodo(id, updates) {
         try {
-            const response = await fetch(`${this.API_URL}/${id}`, {
+            const apiUrl = this.getFullAPIUrl(`/todos/${id}`);
+            const response = await fetch(apiUrl, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updates)
@@ -330,7 +357,7 @@ class TodoApp {
 
         try {
             const deletePromises = completedTodos.map(todo => 
-                fetch(`${this.API_URL}/${todo._id}`, { method: 'DELETE' })
+                fetch(this.getFullAPIUrl(`/todos/${todo._id}`), { method: 'DELETE' })
             );
             
             await Promise.all(deletePromises);
@@ -354,7 +381,7 @@ class TodoApp {
 
         try {
             const updatePromises = incompleteTodos.map(todo => 
-                fetch(`${this.API_URL}/${todo._id}`, { method: 'PUT' })
+                fetch(this.getFullAPIUrl(`/todos/${todo._id}`), { method: 'PUT' })
             );
             
             await Promise.all(updatePromises);
@@ -509,8 +536,9 @@ class TodoApp {
         btn.disabled = true;
 
         try {
-            console.log('Checking server connection to:', this.API_URL);
-            const response = await fetch(this.API_URL);
+            const healthUrl = this.getFullAPIUrl('/health');
+            console.log('Checking server connection to:', healthUrl);
+            const response = await fetch(healthUrl);
             
             if (response.ok) {
                 btn.innerHTML = '<i class="fas fa-check"></i> Server Online';
@@ -606,4 +634,11 @@ class TodoApp {
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new TodoApp();
+    
+    // Debug info for troubleshooting
+    console.log('🔍 Debug Info:');
+    console.log('Host:', window.location.host);
+    console.log('Protocol:', window.location.protocol);
+    console.log('API URL:', window.app.getFullAPIUrl('/todos'));
+    console.log('Health URL:', window.app.getFullAPIUrl('/health'));
 });

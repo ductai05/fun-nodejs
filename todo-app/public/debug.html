@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Todo App</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .debug-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .debug-title {
+            color: #007acc;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #005a9e; }
+        #results { margin-top: 20px; }
+        .url-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-left: 4px solid #007acc;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Todo App Debug Panel</h1>
+    
+    <div class="debug-section">
+        <div class="debug-title">Environment Information</div>
+        <div class="url-info">
+            <strong>Current URL:</strong> <span id="current-url"></span><br>
+            <strong>Host:</strong> <span id="host"></span><br>
+            <strong>Protocol:</strong> <span id="protocol"></span><br>
+            <strong>Environment:</strong> <span id="environment"></span>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <div class="debug-title">API Endpoints</div>
+        <div class="url-info">
+            <strong>Base API:</strong> <span id="base-api"></span><br>
+            <strong>Todos URL:</strong> <span id="todos-url"></span><br>
+            <strong>Health URL:</strong> <span id="health-url"></span>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <div class="debug-title">API Tests</div>
+        <button onclick="testHealth()">Test Health Endpoint</button>
+        <button onclick="testTodos()">Test Todos Endpoint</button>
+        <button onclick="testAllEndpoints()">Test All Endpoints</button>
+        <button onclick="clearResults()">Clear Results</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <div class="debug-section">
+        <div class="debug-title">Quick Actions</div>
+        <a href="/" style="text-decoration: none;">
+            <button>← Back to Todo App</button>
+        </a>
+        <a href="/guide.html" style="text-decoration: none;">
+            <button>📖 Setup Guide</button>
+        </a>
+    </div>
+
+    <script>
+        // Environment detection functions (copied from main app)
+        function getFullAPIUrl(endpoint = '') {
+            const currentHost = window.location.host;
+            
+            if (currentHost.includes(':5500') || currentHost.includes('127.0.0.1:5500')) {
+                return `http://localhost:3000/api${endpoint}`;
+            } 
+            
+            if (currentHost.includes('localhost:3000') || currentHost.includes('127.0.0.1:3000')) {
+                return `/api${endpoint}`;
+            }
+            
+            return `/api${endpoint}`;
+        }
+
+        function detectEnvironment() {
+            const host = window.location.host;
+            if (host.includes('vercel.app')) return 'Vercel Production';
+            if (host.includes('localhost') || host.includes('127.0.0.1')) return 'Local Development';
+            return 'Unknown';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-url').textContent = window.location.href;
+            document.getElementById('host').textContent = window.location.host;
+            document.getElementById('protocol').textContent = window.location.protocol;
+            document.getElementById('environment').textContent = detectEnvironment();
+            
+            document.getElementById('base-api').textContent = getFullAPIUrl('');
+            document.getElementById('todos-url').textContent = getFullAPIUrl('/todos');
+            document.getElementById('health-url').textContent = getFullAPIUrl('/health');
+        });
+
+        // Test functions
+        async function testHealth() {
+            const results = document.getElementById('results');
+            const url = getFullAPIUrl('/health');
+            
+            addResult('info', `Testing Health Endpoint: ${url}`);
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('success', `✅ Health Check Passed!\nResponse: ${JSON.stringify(data, null, 2)}`);
+                } else {
+                    addResult('error', `❌ Health Check Failed!\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`);
+                }
+            } catch (error) {
+                addResult('error', `❌ Health Check Error!\nError: ${error.message}`);
+            }
+        }
+
+        async function testTodos() {
+            const results = document.getElementById('results');
+            const url = getFullAPIUrl('/todos');
+            
+            addResult('info', `Testing Todos Endpoint: ${url}`);
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('success', `✅ Todos Endpoint Working!\nFound ${data.length} todos\nFirst few: ${JSON.stringify(data.slice(0, 2), null, 2)}`);
+                } else {
+                    addResult('error', `❌ Todos Endpoint Failed!\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`);
+                }
+            } catch (error) {
+                addResult('error', `❌ Todos Endpoint Error!\nError: ${error.message}`);
+            }
+        }
+
+        async function testAllEndpoints() {
+            clearResults();
+            addResult('info', '🧪 Running All Tests...');
+            await testHealth();
+            await testTodos();
+            addResult('info', '🎉 All Tests Completed!');
+        }
+
+        function addResult(type, message) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.style.whiteSpace = 'pre-wrap';
+            div.textContent = message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // Auto-test on load for quick debugging
+        setTimeout(() => {
+            addResult('info', '🚀 Auto-testing on page load...');
+            testHealth();
+        }, 1000);
+    </script>
+</body>
+</html>
