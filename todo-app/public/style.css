@@ -49,6 +49,11 @@ body {
 .stats {
     font-size: 1.1rem;
     color: #666;
+}
+
+.overdue-stat {
+    color: #f56565;
+    font-weight: 600;
     font-weight: 500;
 }
 
@@ -157,6 +162,43 @@ body {
     transform: translateY(0);
 }
 
+/* Deadline Input Group */
+.deadline-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 200px;
+}
+
+.deadline-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.deadline-group label i {
+    color: #667eea;
+}
+
+#deadline-input, #edit-deadline-input {
+    padding: 12px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    transition: all 0.3s ease;
+    color: #4a5568;
+}
+
+#deadline-input:focus, #edit-deadline-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
 /* Filter Section */
 .filter-section {
     display: flex;
@@ -191,6 +233,12 @@ body {
 .filter-btn:hover:not(.active) {
     border-color: #4c51bf;
     color: #4c51bf;
+}
+
+.filter-btn[data-filter="overdue"].active {
+    background: #f56565;
+    color: white;
+    border-color: #f56565;
 }
 
 .bulk-actions {
@@ -337,6 +385,38 @@ body {
 .priority-low .priority-badge {
     background: #c6f6d5;
     color: #22543d;
+}
+
+/* Deadline Styling */
+.deadline-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: #e6fffa;
+    color: #065f46;
+}
+
+.deadline-info i {
+    font-size: 0.75rem;
+}
+
+.deadline-info.overdue {
+    background: #fed7d7;
+    color: #c53030;
+    font-weight: 600;
+}
+
+/* Overdue Todo Item */
+.todo-item.overdue {
+    border-left: 4px solid #f56565;
+    background: linear-gradient(90deg, #fed7d7 0%, rgba(255, 255, 255, 0.95) 10%);
+}
+
+.todo-item.overdue .todo-text {
+    color: #c53030;
 }
 
 .todo-actions {
@@ -578,6 +658,17 @@ body {
     
     .todo-actions {
         margin-top: 10px;
+    }
+    
+    .deadline-group {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .todo-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 }
 

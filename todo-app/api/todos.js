@@ -45,6 +45,10 @@ const todoSchema = new mongoose.Schema({
         enum: ['low', 'medium', 'high'], 
         default: 'medium' 
     },
+    deadline: { 
+        type: Date, 
+        default: null 
+    },
     createdAt: { 
         type: Date, 
         default: Date.now 
@@ -81,14 +85,18 @@ export default async function handler(req, res) {
                 return res.status(200).json(todos);
 
             case 'POST':
+                console.log('Request body:', req.body);
                 const newTodo = new Todo({
                     task: req.body.task,
                     completed: req.body.completed || false,
                     priority: req.body.priority || 'medium',
+                    deadline: req.body.deadline || null,
                     createdAt: req.body.createdAt || new Date()
                 });
                 
+                console.log('New todo before save:', newTodo);
                 const savedTodo = await newTodo.save();
+                console.log('Saved todo:', savedTodo);
                 return res.status(201).json(savedTodo);
 
             default:

@@ -70,6 +70,10 @@ const todoSchema = new mongoose.Schema({
         enum: ['low', 'medium', 'high'], 
         default: 'medium' 
     },
+    deadline: { 
+        type: Date, 
+        default: null 
+    },
     createdAt: { 
         type: Date, 
         default: Date.now 
@@ -93,14 +97,18 @@ app.get('/api/todos', async (req, res) => {
 
 // 2. Thêm một công việc mới
 app.post('/api/todos', async (req, res) => {
+    console.log('POST /api/todos - Request body:', req.body);
     const todo = new Todo({
         task: req.body.task,
         completed: req.body.completed || false,
         priority: req.body.priority || 'medium',
+        deadline: req.body.deadline || null,
         createdAt: req.body.createdAt || new Date()
     });
     try {
+        console.log('Todo before save:', todo);
         const newTodo = await todo.save();
+        console.log('Todo after save:', newTodo);
         res.status(201).json(newTodo);
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -134,6 +142,7 @@ app.patch('/api/todos/:id', async (req, res) => {
         if (req.body.task !== undefined) todo.task = req.body.task;
         if (req.body.completed !== undefined) todo.completed = req.body.completed;
         if (req.body.priority !== undefined) todo.priority = req.body.priority;
+        if (req.body.deadline !== undefined) todo.deadline = req.body.deadline;
         
         const updatedTodo = await todo.save();
         res.json(updatedTodo);

@@ -45,6 +45,10 @@ const todoSchema = new mongoose.Schema({
         enum: ['low', 'medium', 'high'], 
         default: 'medium' 
     },
+    deadline: { 
+        type: Date, 
+        default: null 
+    },
     createdAt: { 
         type: Date, 
         default: Date.now 
@@ -103,6 +107,7 @@ export default async function handler(req, res) {
                 if (req.body.task !== undefined) todoToUpdate.task = req.body.task;
                 if (req.body.completed !== undefined) todoToUpdate.completed = req.body.completed;
                 if (req.body.priority !== undefined) todoToUpdate.priority = req.body.priority;
+                if (req.body.deadline !== undefined) todoToUpdate.deadline = req.body.deadline;
                 
                 const patchedTodo = await todoToUpdate.save();
                 return res.status(200).json(patchedTodo);

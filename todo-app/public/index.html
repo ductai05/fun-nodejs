@@ -16,7 +16,8 @@
             <h1><i class="fas fa-tasks"></i>Cieldt Todo App</h1>
             <div class="stats">
                 <span id="total-tasks">0</span> tasks total,
-                <span id="completed-tasks">0</span> completed
+                <span id="completed-tasks">0</span> completed,
+                <span id="overdue-tasks" class="overdue-stat">0</span> overdue
             </div>
             <div class="server-info">
                 <button id="check-server" class="check-server-btn">
@@ -33,6 +34,12 @@
                             <option value="medium" selected>Medium Priority</option>
                             <option value="high">High Priority</option>
                         </select>
+                        <div class="deadline-group">
+                            <label for="deadline-input">
+                                <i class="fas fa-calendar-alt"></i> Deadline
+                            </label>
+                            <input type="datetime-local" id="deadline-input" title="Set deadline (optional)">
+                        </div>
                         <button type="submit" id="add-btn">
                             <i class="fas fa-plus"></i> Add Task
                         </button>
@@ -45,12 +52,14 @@
                     <button class="filter-btn active" data-filter="all">All</button>
                     <button class="filter-btn" data-filter="active">Active</button>
                     <button class="filter-btn" data-filter="completed">Completed</button>
+                    <button class="filter-btn" data-filter="overdue">Overdue</button>
                 </div>
                 <div class="sort-section">
                     <select id="sort-select">
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
                         <option value="priority">Priority</option>
+                        <option value="deadline">Deadline</option>
                         <option value="alphabetical">A-Z</option>
                     </select>
                 </div>
@@ -100,6 +109,12 @@
                     <option value="medium">Medium Priority</option>
                     <option value="high">High Priority</option>
                 </select>
+                <div class="deadline-group">
+                    <label for="edit-deadline-input">
+                        <i class="fas fa-calendar-alt"></i> Deadline
+                    </label>
+                    <input type="datetime-local" id="edit-deadline-input" title="Set deadline (optional)">
+                </div>
             </div>
             <div class="modal-footer">
                 <button id="cancel-edit" class="btn-secondary">Cancel</button>
