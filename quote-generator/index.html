@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Quote Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+
+        .quote-container {
+            margin: 40px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .quote-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #444;
+            font-style: italic;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .quote-text::before {
+            content: '"';
+            font-size: 4rem;
+            color: #667eea;
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            opacity: 0.3;
+        }
+
+        .quote-author {
+            font-size: 1.1rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: none;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #fecaca;
+        }
+
+        .stats {
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .quote-text {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Random Quote Generator</h1>
+        
+        <div class="quote-container" id="quoteContainer">
+            <div class="loading" id="loading">Đang tải quote...</div>
+            <div class="quote-text" id="quoteText">
+                "Click vào nút bên dưới để nhận quote ngẫu nhiên!"
+            </div>
+            <div class="quote-author" id="quoteAuthor">Welcome!</div>
+        </div>
+
+        <div class="error" id="error" style="display: none;"></div>
+
+        <button class="btn" onclick="getRandomQuote()" id="getQuoteBtn">
+            🎲 Lấy Quote Mới
+        </button>
+
+        <button class="btn" onclick="shareQuote()" id="shareBtn" style="display: none;">
+            📤 Chia Sẻ
+        </button>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="footer">
+            <p>Made with ❤️ using Node.js & Vercel</p>
+        </div>
+    </div>
+
+    <script>
+        let currentQuote = null;
+
+        async function getRandomQuote() {
+            const loading = document.getElementById('loading');
+            const quoteText = document.getElementById('quoteText');
+            const quoteAuthor = document.getElementById('quoteAuthor');
+            const error = document.getElementById('error');
+            const getQuoteBtn = document.getElementById('getQuoteBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const stats = document.getElementById('stats');
+            const quoteContainer = document.getElementById('quoteContainer');
+
+            // Show loading state
+            loading.style.display = 'block';
+            quoteText.style.display = 'none';
+            quoteAuthor.style.display = 'none';
+            error.style.display = 'none';
+            shareBtn.style.display = 'none';
+            getQuoteBtn.disabled = true;
+            getQuoteBtn.textContent = '⏳ Đang tải...';
+
+            try {
+                const response = await fetch('/api');
+                const data = await response.json();
+
+                if (data.success) {
+                    currentQuote = data.quote;
+                    quoteText.textContent = data.quote.text;
+                    quoteAuthor.textContent = `- ${data.quote.author}`;
+                    stats.textContent = `Quote #${Math.floor(Math.random() * 1000) + 1} trong tổng số ${data.totalQuotes} quotes`;
+
+                    // Show content with animation
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                        quoteText.style.display = 'block';
+                        quoteAuthor.style.display = 'block';
+                        quoteContainer.classList.add('fade-in');
+                        shareBtn.style.display = 'inline-block';
+                    }, 500);
+                } else {
+                    throw new Error(data.message || 'Không thể tải quote');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                loading.style.display = 'none';
+                error.textContent = `Lỗi: ${err.message}`;
+                error.style.display = 'block';
+            } finally {
+                getQuoteBtn.disabled = false;
+                getQuoteBtn.textContent = '🎲 Lấy Quote Mới';
+            }
+        }
+
+        function shareQuote() {
+            if (!currentQuote) return;
+
+            const text = `"${currentQuote.text}" - ${currentQuote.author}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Random Quote',
+                    text: text
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Quote đã được copy vào clipboard!');
+                }).catch(() => {
+                    // Manual fallback
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert('Quote đã được copy vào clipboard!');
+                });
+            }
+        }
+
+        // Load initial quote on page load
+        window.addEventListener('load', () => {
+            setTimeout(getRandomQuote, 1000);
+        });
+
+        // Add keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault();
+                getRandomQuote();
+            }
+        });
+    </script>
+</body>
+</html>
+
